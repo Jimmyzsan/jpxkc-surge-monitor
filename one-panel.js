@@ -31,6 +31,10 @@ function shorten(text, limit) {
   return `${value.slice(0, Math.max(0, limit - 1))}…`;
 }
 
+function squeezeCn(text) {
+  return normalize(text).replace(/[，。；：]/g, " ");
+}
+
 async function main() {
   const raw = await request(API_URL);
   const list = JSON.parse(raw);
@@ -42,7 +46,7 @@ async function main() {
 
   finish({
     title: "每日一句",
-    content: `${shorten(item.title, 26)}\n${shorten(item.summary, 28)}`,
+    content: `${shorten(item.title, 22)}\n${shorten(squeezeCn(item.summary), 22)}`,
     icon: "book.closed.circle",
     "icon-color": "#FF9F0A",
   });

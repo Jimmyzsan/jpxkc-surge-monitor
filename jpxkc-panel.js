@@ -132,9 +132,27 @@ function shorten(text, limit) {
   return `${value.slice(0, Math.max(0, limit - 1))}…`;
 }
 
-function lineFor(label, item, titleLimit) {
+function shortDate(value) {
+  const text = normalize(value).replace(/\./g, "-");
+  const match = text.match(/(20\d{2}-\d{1,2}-\d{1,2})/);
+  return match ? match[1] : value || "无日期";
+}
+
+function extractBatch(title) {
+  const text = normalize(title);
+  const batchMatch = text.match(/(20\d{4}期)/);
+  if (batchMatch) {
+    if (text.includes("竞价结果")) return `${batchMatch[1]}结果`;
+    if (text.includes("竞买人相关信息公示")) return `${batchMatch[1]}公示`;
+    return batchMatch[1];
+  }
+  if (text.includes("撤销")) return shorten(text.replace(/^关于/, ""), 16);
+  return shorten(text, 16);
+}
+
+function lineFor(label, item) {
   if (!item) return `${label}: 暂无数据`;
-  return `${label}: ${shorten(item.title, titleLimit)} | ${item.date || "无日期"}`;
+  return `${label}: ${extractBatch(item.title)} ${shortDate(item.date)}`;
 }
 
 async function main() {
@@ -149,8 +167,8 @@ async function main() {
   finish({
     title: "京牌小客车监控",
     content: [
-      lineFor("公告", latestAnnouncement, 18),
-      lineFor("结果", latestResult, 18),
+      lineFor("公告", latestAnnouncement),
+      lineFor("结果", latestResult),
     ].join("\n"),
     icon: "car.circle",
     "icon-color": "#4DA3FF",
