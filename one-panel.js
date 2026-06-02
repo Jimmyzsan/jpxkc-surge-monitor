@@ -35,6 +35,16 @@ function squeezeCn(text) {
   return normalize(text).replace(/[，。；：]/g, " ");
 }
 
+function compressEn(text) {
+  return normalize(text)
+    .replace(/\bis\b/gi, "")
+    .replace(/\bthe\b/gi, "")
+    .replace(/\ba\b/gi, "")
+    .replace(/\ban\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 async function main() {
   const raw = await request(API_URL);
   const list = JSON.parse(raw);
@@ -46,7 +56,7 @@ async function main() {
 
   finish({
     title: "每日一句",
-    content: `${shorten(item.title, 22)}\n${shorten(squeezeCn(item.summary), 22)}`,
+    content: `${shorten(compressEn(item.title), 16)}\n${shorten(squeezeCn(item.summary), 16)}`,
     icon: "book.closed.circle",
     "icon-color": "#FF9F0A",
   });
