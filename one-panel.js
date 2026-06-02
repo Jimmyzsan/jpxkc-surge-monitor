@@ -43,8 +43,8 @@ async function main() {
   finish({
     title: "每日一句",
     content: `${shorten(item.title, 26)}\n${shorten(item.summary, 28)}`,
-    icon: "quote.bubble",
-    "icon-color": "#5AC8FA",
+    icon: "book.closed.circle",
+    "icon-color": "#FF9F0A",
   });
 }
 
