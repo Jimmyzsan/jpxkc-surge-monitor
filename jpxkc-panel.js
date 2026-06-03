@@ -1,5 +1,5 @@
 const ANNOUNCEMENT_URL = "https://jpxkc.cbex.com/page/jpxkc/info/gg_list";
-const RESULT_URL = "https://jpxkc.cbex.com/page/jpxkc/info/jggs_list";
+const CURRENT_BATCH_URL = "https://jpxkc.cbex.com/jpxkc/zc_prjs/2400.html";
 const REQUEST_TIMEOUT = 15000;
 
 function finish(payload) {
@@ -126,6 +126,18 @@ function parseListPayload(text, category) {
   ]);
 }
 
+function extractCurrentBatchInfo(text) {
+  const html = String(text || "");
+  const titleMatch = html.match(/京牌小客车司法处置第(\d+)期/);
+  const signupMatch = html.match(/报名及保证金交纳截止时间[^0-9]*(20\d{2}[.-]\d{1,2}[.-]\d{1,2})/);
+  const startMatch = html.match(/竞价开始时间[^0-9]*(20\d{2}[.-]\d{1,2}[.-]\d{1,2})/);
+  return {
+    batch: titleMatch ? titleMatch[1] : "",
+    signupDate: signupMatch ? signupMatch[1].replace(/\./g, "-") : "",
+    startDate: startMatch ? startMatch[1].replace(/\./g, "-") : "",
+  };
+}
+
 function shorten(text, limit) {
   const value = normalize(text);
   if (value.length <= limit) return value;
@@ -156,19 +168,22 @@ function lineFor(label, item) {
 }
 
 async function main() {
-  const [announcementRaw, resultRaw] = await Promise.all([
+  const [announcementRaw, currentBatchRaw] = await Promise.all([
     request(ANNOUNCEMENT_URL),
-    request(RESULT_URL),
+    request(CURRENT_BATCH_URL),
   ]);
 
   const latestAnnouncement = parseListPayload(announcementRaw, "公告")[0] || null;
-  const latestResult = parseListPayload(resultRaw, "结果公示")[0] || null;
+  const currentBatch = extractCurrentBatchInfo(currentBatchRaw);
+  const batchLine = currentBatch.batch
+    ? `本期: ${currentBatch.batch}期开拍 ${currentBatch.startDate || "--"}`
+    : "本期: 日期待确认";
 
   finish({
     title: "京牌小客车监控",
     content: [
       lineFor("公告", latestAnnouncement),
-      lineFor("结果", latestResult),
+      batchLine,
     ].join("\n"),
     icon: "car.circle",
     "icon-color": "#4DA3FF",
