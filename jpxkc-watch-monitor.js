@@ -1,7 +1,7 @@
 const API_URL = "https://jpxkc.cbex.com/service/jpxkc/prj/wgcsList";
-const STORAGE_KEY = "surge:jpxkc:plate-value-watchlist:wgcs";
+const STORAGE_KEY = "surge:jpxkc:plate-groups-watchlist:wgcs";
 
-const WATCHLIST = [
+const VALUE_LIST = [
   {
     id: "580674",
     plate: "京NA9707",
@@ -38,6 +38,39 @@ const WATCHLIST = [
     detail: "https://jpxkc.cbex.com/jpxkc/prj/detail/586476.html",
   },
 ];
+
+const CHEAP_LIST = [
+  {
+    id: "580619",
+    plate: "京ACQ693",
+    label: "低价1",
+    price: "¥20,000",
+    detail: "https://jpxkc.cbex.com/jpxkc/prj/detail/580619.html",
+  },
+  {
+    id: "581435",
+    plate: "京FB5713",
+    label: "低价2",
+    price: "¥20,000",
+    detail: "https://jpxkc.cbex.com/jpxkc/prj/detail/581435.html",
+  },
+  {
+    id: "586809",
+    plate: "京P8M279",
+    label: "低价3",
+    price: "¥20,000",
+    detail: "https://jpxkc.cbex.com/jpxkc/prj/detail/586809.html",
+  },
+  {
+    id: "584583",
+    plate: "京Q2Q6W7",
+    label: "低价4",
+    price: "¥20,000",
+    detail: "https://jpxkc.cbex.com/jpxkc/prj/detail/584583.html",
+  },
+];
+
+const WATCHLIST = [...VALUE_LIST, ...CHEAP_LIST];
 
 function finish() {
   $done({});
@@ -105,11 +138,16 @@ function diffLine(item, previous, current) {
   return `${item.label} ${item.plate} ${item.price} 围观:${current} (${sign})`;
 }
 
+function sectionHeader(title) {
+  return `【${title}】`;
+}
+
 async function main() {
   const previousState = readState();
   const response = await requestWgcs(WATCHLIST.map((item) => item.id));
   const currentState = {};
-  const lines = [];
+  const valueLines = [sectionHeader("拿牌候选 Top5")];
+  const cheapLines = [sectionHeader("最低价 4 辆")];
   let changed = false;
 
   for (const item of WATCHLIST) {
@@ -120,13 +158,20 @@ async function main() {
     if (current !== previous) {
       changed = true;
     }
-    lines.push(diffLine(item, previous, current));
+    const line = diffLine(item, previous, current);
+    if (VALUE_LIST.some((entry) => entry.id === item.id)) {
+      valueLines.push(line);
+    } else {
+      cheapLines.push(line);
+    }
   }
 
   writeState(currentState);
 
+  const body = [...valueLines, ...cheapLines].join("\n");
+
   if (!Object.keys(previousState).length) {
-    notify("京牌拿牌候选监控已初始化", "已记录 Top 5 候选当前围观量", lines.join("\n"));
+    notify("京牌分组监控已初始化", "已记录候选组和最低价组围观量", body);
     return;
   }
 
@@ -134,11 +179,11 @@ async function main() {
     return;
   }
 
-  notify("京牌拿牌候选围观量更新", "Top 5 候选围观数有变化", lines.join("\n"));
+  notify("京牌分组围观量更新", "候选组或最低价组围观数有变化", body);
 }
 
 main()
   .catch((error) => {
-    notify("京牌拿牌候选监控失败", "", String(error && error.message ? error.message : error));
+    notify("京牌分组监控失败", "", String(error && error.message ? error.message : error));
   })
   .finally(finish);

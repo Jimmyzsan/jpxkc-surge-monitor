@@ -1,6 +1,6 @@
 const API_URL = "https://jpxkc.cbex.com/service/jpxkc/prj/wgcsList";
 
-const WATCHLIST = [
+const VALUE_LIST = [
   {
     id: "580674",
     plate: "京NA9707",
@@ -32,6 +32,31 @@ const WATCHLIST = [
     price: "5.4w",
   },
 ];
+
+const CHEAP_LIST = [
+  {
+    id: "580619",
+    plate: "京ACQ693",
+    price: "2.0w",
+  },
+  {
+    id: "581435",
+    plate: "京FB5713",
+    price: "2.0w",
+  },
+  {
+    id: "586809",
+    plate: "京P8M279",
+    price: "2.0w",
+  },
+  {
+    id: "584583",
+    plate: "京Q2Q6W7",
+    price: "2.0w",
+  },
+];
+
+const WATCHLIST = [...VALUE_LIST, ...CHEAP_LIST];
 
 function finish(payload) {
   $done(payload);
@@ -84,17 +109,18 @@ async function main() {
     data[String(entry.XMID)] = Number(entry.WGCS);
   }
 
-  const cold = WATCHLIST[0];
-  const shortlist = WATCHLIST.slice(1);
-  const shortlistText = shortlist
+  const valueText = VALUE_LIST.slice(0, 2)
+    .map((item) => `${item.plate.slice(-4)} ${item.price}/${formatCount(data[item.id])}`)
+    .join(" ");
+  const cheapText = CHEAP_LIST
     .map((item) => `${item.plate.slice(-3)} ${item.price}/${formatCount(data[item.id])}`)
     .join(" ");
 
   finish({
-    title: "拿牌候选监控",
+    title: "京牌分组监控",
     content: [
-      `Top1 ${cold.plate.slice(-4)} ${cold.price}/${formatCount(data[cold.id])}`,
-      `Top2-5 ${shortlistText}`,
+      `候选 ${valueText}`,
+      `低价 ${cheapText}`,
     ].join("\n"),
     icon: "eye.circle",
     "icon-color": "#34C759",
@@ -103,7 +129,7 @@ async function main() {
 
 main().catch((error) => {
   finish({
-    title: "拿牌候选监控",
+    title: "京牌分组监控",
     content: `获取失败: ${String(error && error.message ? error.message : error)}`,
     icon: "exclamationmark.triangle",
     "icon-color": "#FF9500",
