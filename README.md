@@ -14,6 +14,7 @@
 - 仓库地址: `https://github.com/Jimmyzsan/jpxkc-surge-monitor`
 - 公告监控 Raw 地址: `https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-monitor.js`
 - 候选车监控 Raw 地址: `https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-monitor.js`
+- 候选车面板 Raw 地址: `https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-panel.js`
 
 ## Surge 配置示例
 
@@ -21,6 +22,12 @@
 京牌公告监控 = type=cron,cronexp=0 * * * *,wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-monitor.js,script-update-interval=300
 
 京牌3-5万候选监控 = type=cron,cronexp=0 */3 * * *,wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-monitor.js,script-update-interval=300
+```
+
+## Surge 面板配置示例
+
+```ini
+京牌3-5万候选 = type=generic,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-panel.js,script-update-interval=300
 ```
 
 ## 公告监控行为
@@ -41,4 +48,5 @@
 - 每次输出当前最可能中拍的 1 辆车和 Top 5 备选
 - 首次运行会初始化基线
 - 后续当 Top 候选或围观数据变化时推送手机通知
+- 面板脚本会显示当前 Top 1 和 Top 4 简表
 - 多人报最高限价时，最终仍按累计摇号次数和指标系统注册时间排序
