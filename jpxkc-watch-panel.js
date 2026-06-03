@@ -2,29 +2,34 @@ const API_URL = "https://jpxkc.cbex.com/service/jpxkc/prj/wgcsList";
 
 const WATCHLIST = [
   {
-    id: "582698",
-    plate: "京NL1951",
-    label: "最少围观",
+    id: "580674",
+    plate: "京NA9707",
+    label: "Top1",
+    price: "2.7w",
   },
   {
-    id: "580619",
-    plate: "京ACQ693",
-    label: "最低价",
+    id: "586470",
+    plate: "京PJ8600",
+    label: "Top2",
+    price: "5.0w",
   },
   {
-    id: "581435",
-    plate: "京FB5713",
-    label: "最低价",
+    id: "580854",
+    plate: "京KK8128",
+    label: "Top3",
+    price: "5.0w",
   },
   {
-    id: "586809",
-    plate: "京P8M279",
-    label: "最低价",
+    id: "582631",
+    plate: "京QG6V13",
+    label: "Top4",
+    price: "5.1w",
   },
   {
-    id: "584583",
-    plate: "京Q2Q6W7",
-    label: "最低价",
+    id: "586476",
+    plate: "京MLM763",
+    label: "Top5",
+    price: "5.4w",
   },
 ];
 
@@ -80,16 +85,16 @@ async function main() {
   }
 
   const cold = WATCHLIST[0];
-  const lowPriceCars = WATCHLIST.slice(1);
-  const lowPriceText = lowPriceCars
-    .map((item) => `${item.plate.slice(-3)}:${formatCount(data[item.id])}`)
+  const shortlist = WATCHLIST.slice(1);
+  const shortlistText = shortlist
+    .map((item) => `${item.plate.slice(-3)} ${item.price}/${formatCount(data[item.id])}`)
     .join(" ");
 
   finish({
-    title: "京牌围观监控",
+    title: "拿牌候选监控",
     content: [
-      `${cold.plate} ${formatCount(data[cold.id])}`,
-      `低价组 ${lowPriceText}`,
+      `Top1 ${cold.plate.slice(-4)} ${cold.price}/${formatCount(data[cold.id])}`,
+      `Top2-5 ${shortlistText}`,
     ].join("\n"),
     icon: "eye.circle",
     "icon-color": "#34C759",
@@ -98,7 +103,7 @@ async function main() {
 
 main().catch((error) => {
   finish({
-    title: "京牌围观监控",
+    title: "拿牌候选监控",
     content: `获取失败: ${String(error && error.message ? error.message : error)}`,
     icon: "exclamationmark.triangle",
     "icon-color": "#FF9500",
