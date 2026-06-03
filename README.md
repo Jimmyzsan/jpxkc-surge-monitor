@@ -8,6 +8,7 @@
 - `jpxkc-watch-monitor.js`: 3-5 万价位动态候选车监控
 - `jpxkc-panel.js`: Surge 面板脚本
 - `jpxkc-watch-panel.js`: 候选车面板脚本
+- `wnCalendar.js`: 自托管黄历播报和面板脚本
 
 ## GitHub 路径
 
@@ -15,6 +16,7 @@
 - 公告监控 Raw 地址: `https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-monitor.js`
 - 候选车监控 Raw 地址: `https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-monitor.js`
 - 候选车面板 Raw 地址: `https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-panel.js`
+- 黄历 Raw 地址: `https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/wnCalendar.js`
 
 ## Surge 配置示例
 
@@ -22,12 +24,16 @@
 京牌公告监控 = type=cron,cronexp=0 * * * *,wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-monitor.js,script-update-interval=300
 
 京牌3-5万候选监控 = type=cron,cronexp=0 */3 * * *,wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-monitor.js,script-update-interval=300
+
+黄历播报 = type=cron,timeout=30,cronexp=8 10 * * *,wake-system=1,argument=notify=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/wnCalendar.js,script-update-interval=300
 ```
 
 ## Surge 面板配置示例
 
 ```ini
 京牌3-5万候选 = type=generic,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/jpxkc-watch-panel.js,script-update-interval=300
+
+今日黄历 = type=generic,timeout=30,script-path=https://raw.githubusercontent.com/Jimmyzsan/jpxkc-surge-monitor/main/wnCalendar.js,script-update-interval=300
 ```
 
 ## 公告监控行为
@@ -50,3 +56,10 @@
 - 后续当 Top 候选或围观数据变化时推送手机通知
 - 面板脚本会显示当前 Top 1 和 Top 4 简表
 - 多人报最高限价时，最终仍按累计摇号次数和指标系统注册时间排序
+
+## 黄历脚本行为
+
+- 脚本托管在本仓库，避免依赖别人的 Raw 链接
+- 内部日历数据走 jsDelivr 镜像，避开 `raw.githubusercontent.com`
+- Cron 配置使用 `argument=notify=1` 时才发送手机通知
+- Panel 配置不带 `argument=notify=1`，只显示面板内容
